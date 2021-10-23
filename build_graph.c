@@ -20,13 +20,12 @@ unsigned long nodesearch(node *first, unsigned long id, unsigned length);
 int searchInSuccessors(node *first, unsigned long prev_pos, unsigned long next_id);
 void linkNodes(node *nodes, unsigned long prev_pos, unsigned long next_pos);
 void computeValences(node *nodes, unsigned length, int max_valence);
+void ExitError(const char *miss, int errcode);
+void writeBinary(node *nodes, unsigned num_nodes, const char *filename);
 
 int main(int argc, char *argv[]){
 
-    if (argc != 2){
-        printf("Please specify the path to the .csv-file to read as an argument\n");
-        exit(1);
-    }
+    if (argc != 2) ExitError("Please specify the path to the .csv-file to read as an argument", 10);
 
     size_t buffer_size = 0;
     size_t num_chars;
@@ -38,10 +37,7 @@ int main(int argc, char *argv[]){
     /* Open the file */
     FILE *fp = fopen(argv[1], "r");
     printf("Opening file %s\n\n", argv[1]);
-    if (!fp){
-        printf("Unable to open file.");
-        exit(1);
-    }
+    if (!fp) ExitError("Unable to open file", 11);
 
     /* Count number of nodes and allocate memory for the nodes vector */
     for (i=0; i<3; i++)
@@ -61,10 +57,8 @@ int main(int argc, char *argv[]){
 
     printf("Found %d lines.\n\n", num_nodes);
 
-    if ((nodes = (node*) malloc(num_nodes*sizeof(node))) == NULL){
-        printf("Unable to allocate memory for the nodes.");
-        exit(1);
-    }
+    if ((nodes = (node*) malloc(num_nodes*sizeof(node))) == NULL)
+        ExitError("Unable to allocate memory for the nodes", 12);
 
     /* Read the information line by line and save it in the struct */
     rewind(fp);
@@ -108,7 +102,7 @@ int main(int argc, char *argv[]){
         prev_pos = NOTFOUND;
         while (field != NULL){
             if (!strcmp(field, ""))
-                printf("Field is empty\n");
+                ExitError("Empty field while reading way", 13);
             sscanf(field, "%lu", &next_id);       
             field = strsep(&buffer, "|");
             //printf("Searching for node with id %lu\n", next_id);
@@ -148,7 +142,7 @@ int main(int argc, char *argv[]){
     printf("\n=== Information of the first %d nodes in the list ===\n", DEBUG_MAX_PRINT);
     printNodesList(nodes, DEBUG_MAX_PRINT);
     computeValences(nodes, num_nodes, DEBUG_MAX_VALENCE);
-
+    writeBinary(nodes, num_nodes, argv[1]);
     fclose(fp);
 }
 
@@ -229,10 +223,8 @@ int searchInSuccessors(node *nodes, unsigned long prev_pos, unsigned long next_i
 // nodes[prev_pos].nsucc by 1.
 void linkNodes(node *nodes, unsigned long prev_pos, unsigned long next_pos){
     nodes[prev_pos].successors = (unsigned long*) realloc(nodes[prev_pos].successors, (nodes[prev_pos].nsucc+1)*sizeof(unsigned long));
-    if (nodes[prev_pos].successors == NULL){
-        printf("Reallocation failed while linking nodes");
-        exit(1);
-    }
+    if (nodes[prev_pos].successors == NULL)
+        ExitError("Reallocation failed while linking nodes", 14);
     nodes[prev_pos].successors[nodes[prev_pos].nsucc] = next_pos;
     nodes[prev_pos].nsucc++;
 }
@@ -242,10 +234,8 @@ void computeValences(node *nodes, unsigned length, int max_valence){
     int i;
     unsigned *valences;
     unsigned too_large = 0;
-    if ((valences = (unsigned*) malloc((max_valence+1)*sizeof(unsigned))) == NULL){
-        printf("Allocation of memory while computing valences failed\n");
-        exit(1);
-    }
+    if ((valences = (unsigned*) malloc((max_valence+1)*sizeof(unsigned))) == NULL)
+        ExitError("Allocation of memory while computing valences failed", 15);
     memset(valences, 0, (max_valence+1)*sizeof(unsigned));
 
     for (i=0; i<length; i++){
@@ -260,4 +250,41 @@ void computeValences(node *nodes, unsigned length, int max_valence){
         printf("Nodes with valence %d:\t%u\n", i, valences[i]);
     }
     printf("Nodes with valence higher than the max of %d: %u\n", max_valence, too_large);
+}
+
+void ExitError(const char *miss, int errcode) {
+    fprintf (stderr, "\n\nERROR: %s.\n\nStopping...\n\n", miss); exit(errcode);
+}
+
+void writeBinary(node *nodes, unsigned num_nodes, const char *filename){
+    FILE *fin;
+    char name[257];
+    int i;
+    printf("\nWriting binary file\n");
+
+    /* Computing the total number of successors */
+    unsigned long ntotnsucc=0UL;
+    for(i=0; i < num_nodes; i++) ntotnsucc += nodes[i].nsucc;
+
+    /* Setting the name of the binary file */
+    strcpy(name, filename); strcpy(strrchr(name, '.'), ".bin");
+
+    if ((fin = fopen (name, "wb")) == NULL)
+        ExitError("the output binary data file cannot be opened", 31);
+
+    /* Global data 􀀀􀀀􀀀 header */
+    if( fwrite(&num_nodes, sizeof(unsigned), 1, fin) +
+        fwrite(&ntotnsucc, sizeof(unsigned long), 1, fin) != 2 )
+            ExitError("when initializing the output binary data file", 32);
+
+    /* Writing all nodes */
+    if( fwrite(nodes, sizeof(node), num_nodes, fin) != num_nodes )
+        ExitError("when writing nodes to the output binary data file", 32);
+
+    /* Writing sucessors in blocks */
+    for(i=0; i < num_nodes; i++) if(nodes[i].nsucc){
+        if( fwrite(nodes[i].successors, sizeof(unsigned long), nodes[i].nsucc, fin) != nodes[i].nsucc )
+            ExitError("when writing edges to the output binary data file", 32);
+    }
+    fclose(fin);
 }
