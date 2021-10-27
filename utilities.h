@@ -11,14 +11,14 @@ typedef struct {
     char *name;
     double lat, lon; // Node position
     unsigned short nsucc; // Number of node successors; i. e. length of successors
-    unsigned long *successors;
+    unsigned *successors;
 } node;
 
 void readNodeLine(char *buffer, node *nodes, int i);
 void printNodesList(node *nodes, int length);
-unsigned long nodesearch(node *first, unsigned long id, unsigned length);
-int searchInSuccessors(node *first, unsigned long prev_pos, unsigned long next_id);
-void linkNodes(node *nodes, unsigned long prev_pos, unsigned long next_pos);
+unsigned nodesearch(node *first, unsigned long id, unsigned length);
+int searchInSuccessors(node *first, unsigned prev_pos, unsigned next_id);
+void linkNodes(node *nodes, unsigned prev_pos, unsigned next_pos);
 void computeValences(node *nodes, unsigned length, int max_valence);
 void ExitError(const char *miss, int errcode);
 void writeBinary(node *nodes, unsigned num_nodes, const char *filename);

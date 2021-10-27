@@ -40,10 +40,10 @@ void printNodesList(node *nodes, int length){
 
 // Search the position of the node with id id in the array of nodes.
 // If it is not found, NOTFOUND is returned.
-unsigned long nodesearch(node *nodes, unsigned long id, unsigned length){
-    unsigned long first = 0;
-    unsigned long last = length - 1;
-    unsigned long middle = (first+last)/2;
+unsigned nodesearch(node *nodes, unsigned long id, unsigned length){
+    unsigned first = 0;
+    unsigned last = length - 1;
+    unsigned middle = (first+last)/2;
 
     while (first <= last) {
         if (nodes[middle].id < id)
@@ -61,9 +61,9 @@ unsigned long nodesearch(node *nodes, unsigned long id, unsigned length){
 
 // Search, if the node with next_id is already in the succesors of the node at prev_pos in nodes.
 // If yes, 1 is returned, otherwise 0.
-int searchInSuccessors(node *nodes, unsigned long prev_pos, unsigned long next_id){
+int searchInSuccessors(node *nodes, unsigned prev_pos, unsigned next_id){
     int k;
-    unsigned long *succs;
+    unsigned *succs;
     succs = nodes[prev_pos].successors;
     for (k=0; k<nodes[prev_pos].nsucc; k++){
         if (nodes[succs[k]].id == next_id){
@@ -75,8 +75,8 @@ int searchInSuccessors(node *nodes, unsigned long prev_pos, unsigned long next_i
 
 // Adds the position next_pos to the list of successors of the node at prev_pos and increments
 // nodes[prev_pos].nsucc by 1.
-void linkNodes(node *nodes, unsigned long prev_pos, unsigned long next_pos){
-    nodes[prev_pos].successors = (unsigned long*) realloc(nodes[prev_pos].successors, (nodes[prev_pos].nsucc+1)*sizeof(unsigned long));
+void linkNodes(node *nodes, unsigned prev_pos, unsigned next_pos){
+    nodes[prev_pos].successors = (unsigned *) realloc(nodes[prev_pos].successors, (nodes[prev_pos].nsucc+1)*sizeof(unsigned));
     if (nodes[prev_pos].successors == NULL)
         ExitError("Reallocation failed while linking nodes", 14);
     nodes[prev_pos].successors[nodes[prev_pos].nsucc] = next_pos;
@@ -137,7 +137,7 @@ void writeBinary(node *nodes, unsigned num_nodes, const char *filename){
 
     /* Writing sucessors in blocks */
     for(i=0; i < num_nodes; i++) if(nodes[i].nsucc){
-        if( fwrite(nodes[i].successors, sizeof(unsigned long), nodes[i].nsucc, fin) != nodes[i].nsucc )
+        if( fwrite(nodes[i].successors, sizeof(unsigned), nodes[i].nsucc, fin) != nodes[i].nsucc )
             ExitError("when writing edges to the output binary data file", 32);
     }
     fclose(fin);
@@ -148,7 +148,7 @@ node *readBinary(const char* filename, unsigned *num_nodes_arg){
     unsigned long ntotnsucc;
     unsigned num_nodes;
     node *nodes;
-    unsigned long *allsuccessors;
+    unsigned *allsuccessors;
     int i;
 
     if ((fin = fopen(filename, "r")) == NULL)
@@ -165,13 +165,13 @@ node *readBinary(const char* filename, unsigned *num_nodes_arg){
     /* getting memory for all data */
     if((nodes = (node *) malloc(num_nodes*sizeof(node))) == NULL)
         ExitError("when allocating memory for the nodes vector", 43);
-    if((allsuccessors = (unsigned long *) malloc(ntotnsucc*sizeof(unsigned long))) == NULL)
+    if((allsuccessors = (unsigned *) malloc(ntotnsucc*sizeof(unsigned))) == NULL)
         ExitError("when allocating memory for the edges vector", 44);
 
     /* Reading all data from file */
     if(fread(nodes, sizeof(node), num_nodes, fin) != num_nodes)
         ExitError("when reading nodes from the binary data file", 45);
-    if(fread(allsuccessors, sizeof(unsigned long), ntotnsucc, fin) != ntotnsucc)
+    if(fread(allsuccessors, sizeof(unsigned), ntotnsucc, fin) != ntotnsucc)
         ExitError("when reading sucessors from the binary data file", 46);
 
     fclose(fin);

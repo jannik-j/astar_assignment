@@ -60,7 +60,7 @@ int main(int argc, char *argv[]){
     int count = 1;
     int found;
     unsigned long prev_id, next_id;
-    unsigned long prev_pos, next_pos;
+    unsigned prev_pos, next_pos;
     num_chars = getline(&buffer, &buffer_size, fp);
     while(!strncmp(buffer, "way", 3)){
         if (count%100000 == 0)
@@ -116,8 +116,8 @@ int main(int argc, char *argv[]){
         num_chars = getline(&buffer, &buffer_size, fp);
         count++;
     }
-    printf("\n=== Information of the first %d nodes in the list ===\n", DEBUG_MAX_PRINT);
-    printNodesList(nodes, DEBUG_MAX_PRINT);
+    //printf("\n=== Information of the first %d nodes in the list ===\n", DEBUG_MAX_PRINT);
+    //printNodesList(nodes, DEBUG_MAX_PRINT);
     computeValences(nodes, num_nodes, DEBUG_MAX_VALENCE);
     writeBinary(nodes, num_nodes, argv[1]);
     fclose(fp);
