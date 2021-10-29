@@ -1,7 +1,8 @@
 #include "priority_queue.h"
-#include <stdio.h>
 
-int IsEmpty( PriorityQueue Pq ){ return ( Pq == NULL ); }
+int IsEmpty(PriorityQueue Pq){
+    return ( Pq == NULL );
+}
 
 unsigned extract_min(PriorityQueue *Pq){
     PriorityQueue first = *Pq;
@@ -14,8 +15,10 @@ unsigned extract_min(PriorityQueue *Pq){
 
 void add_with_priority(unsigned index, PriorityQueue *Pq, double *dist){ 
     QueueElement *aux = (QueueElement *) malloc(sizeof(QueueElement));
-    if(aux == NULL) exit(66);
-        aux->index = index;
+    if(aux == NULL)
+        exit(66);
+
+    aux->index = index;
     double costv = dist[index];
     if (*Pq == NULL || !(costv > dist[(*Pq)->index])) {
         aux->next = *Pq;
@@ -32,7 +35,7 @@ void decrease_priority(unsigned index, PriorityQueue *Pq, double *dist){
     if((*Pq)->index == index)
         return;
 
-    float costv = dist[index];
+    double costv = dist[index];
     if(!(costv > dist[(*Pq)->index])){
         register QueueElement *prepv;
         for(prepv = *Pq; prepv->next->index != index; prepv = prepv->next);

@@ -4,19 +4,18 @@
 #include <limits.h>
 #include <float.h>
 
-double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned num_nodes, unsigned *parent);
+double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned long num_nodes, unsigned *parent);
 double haversine(node node1, node node2);
 const double R = 6371e3;
 
 int main(int argc, char *argv[]){
     if (argc != 2) ExitError("Please specify the path to the binary file to read as an argument", 10);
 
-    unsigned num_nodes;
+    unsigned long num_nodes;
     node *nodes = readBinary(argv[1], &num_nodes);
 
     //printNodesList(nodes, DEBUG_MAX_PRINT);
     computeValences(nodes, num_nodes, DEBUG_MAX_VALENCE);
-
     unsigned long start = 240949599UL;
     unsigned long end = 195977239UL;
 
@@ -76,7 +75,7 @@ double haversine(node node1, node node2){
     return (R*c);
 }
 
-double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned num_nodes, unsigned *parent){ 
+double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned long num_nodes, unsigned *parent){ 
     PriorityQueue Pq = NULL;
     char *expanded = (char *) malloc(num_nodes*sizeof(char));
     memset(expanded, 0, num_nodes*sizeof(char));
@@ -93,7 +92,7 @@ double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned num_nodes,
         register unsigned i;
         unsigned min_index = extract_min(&Pq);
         char Is_adj_In_Pq;
-        double max_double = DBL_MAX;
+        // double max_double = DBL_MAX;
         expanded[min_index] = 1;
         if (min_index == goal)
             return dist[min_index];
@@ -105,7 +104,7 @@ double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned num_nodes,
             double dist_aux = dist[min_index] + haversine(nodes[min_index], nodes[adj]);
             //printf("%lf\n", dist_aux);
             if(dist[adj] > dist_aux){
-                Is_adj_In_Pq = (dist[adj] < max_double);
+                Is_adj_In_Pq = (dist[adj] < DBL_MAX);
                 dist[adj] = dist_aux;
                 parent[adj] = min_index;
                 if(Is_adj_In_Pq)

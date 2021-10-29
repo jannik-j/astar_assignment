@@ -40,7 +40,7 @@ void printNodesList(node *nodes, int length){
 
 // Search the position of the node with id id in the array of nodes.
 // If it is not found, NOTFOUND is returned.
-unsigned nodesearch(node *nodes, unsigned long id, unsigned length){
+unsigned nodesearch(node *nodes, unsigned long id, unsigned long length){
     unsigned first = 0;
     unsigned last = length - 1;
     unsigned middle = (first+last)/2;
