@@ -61,7 +61,7 @@ unsigned nodesearch(node *nodes, unsigned long id, unsigned length){
 
 // Search, if the node with next_id is already in the succesors of the node at prev_pos in nodes.
 // If yes, 1 is returned, otherwise 0.
-int searchInSuccessors(node *nodes, unsigned prev_pos, unsigned next_id){
+int searchInSuccessors(node *nodes, unsigned prev_pos, unsigned long next_id){
     int k;
     unsigned *succs;
     succs = nodes[prev_pos].successors;
@@ -84,10 +84,10 @@ void linkNodes(node *nodes, unsigned prev_pos, unsigned next_pos){
 }
 
 // Computes and displays the distribution of valences of the nodes.
-void computeValences(node *nodes, unsigned length, int max_valence){
+void computeValences(node *nodes, unsigned long length, int max_valence){
     int i;
     unsigned *valences;
-    unsigned too_large = 0;
+    unsigned too_large = 0U;
     if ((valences = (unsigned*) malloc((max_valence+1)*sizeof(unsigned))) == NULL)
         ExitError("Allocation of memory while computing valences failed", 15);
     memset(valences, 0, (max_valence+1)*sizeof(unsigned));
@@ -110,7 +110,7 @@ void ExitError(const char *miss, int errcode) {
     fprintf (stderr, "\n\nERROR: %s.\n\nStopping...\n\n", miss); exit(errcode);
 }
 
-void writeBinary(node *nodes, unsigned num_nodes, const char *filename){
+void writeBinary(node *nodes, unsigned long num_nodes, const char *filename){
     FILE *fin;
     char name[257];
     int i;
@@ -127,7 +127,7 @@ void writeBinary(node *nodes, unsigned num_nodes, const char *filename){
         ExitError("the output binary data file cannot be opened", 31);
 
     /* Global data 􀀀􀀀􀀀 header */
-    if( fwrite(&num_nodes, sizeof(unsigned), 1, fin) +
+    if( fwrite(&num_nodes, sizeof(unsigned long), 1, fin) +
         fwrite(&ntotnsucc, sizeof(unsigned long), 1, fin) != 2 )
             ExitError("when initializing the output binary data file", 32);
 
@@ -143,7 +143,7 @@ void writeBinary(node *nodes, unsigned num_nodes, const char *filename){
     fclose(fin);
 }
 
-node *readBinary(const char* filename, unsigned *num_nodes_arg){
+node *readBinary(const char* filename, unsigned long *num_nodes_arg){
     FILE *fin;
     unsigned long ntotnsucc;
     unsigned num_nodes;
@@ -157,7 +157,7 @@ node *readBinary(const char* filename, unsigned *num_nodes_arg){
     printf("Reading binary file %s\n", filename);
 
     /* Global data - header */
-    if(fread(&num_nodes, sizeof(unsigned), 1, fin) +
+    if(fread(&num_nodes, sizeof(unsigned long), 1, fin) +
         fread(&ntotnsucc, sizeof(unsigned long), 1, fin) != 2)
             ExitError("when reading the header of the binary data file", 42);
     *num_nodes_arg = num_nodes;

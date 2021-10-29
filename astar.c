@@ -17,8 +17,8 @@ int main(int argc, char *argv[]){
     //printNodesList(nodes, DEBUG_MAX_PRINT);
     computeValences(nodes, num_nodes, DEBUG_MAX_VALENCE);
 
-    unsigned long start = 240949599;
-    unsigned long end = 195977239;
+    unsigned long start = 240949599UL;
+    unsigned long end = 195977239UL;
 
     unsigned start_index = nodesearch(nodes, start, num_nodes);
     unsigned end_index = nodesearch(nodes, end, num_nodes);
@@ -92,6 +92,8 @@ double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned num_nodes,
     while(!IsEmpty(Pq)){
         register unsigned i;
         unsigned min_index = extract_min(&Pq);
+        char Is_adj_In_Pq;
+        double max_double = DBL_MAX;
         expanded[min_index] = 1;
         if (min_index == goal)
             return dist[min_index];
@@ -103,7 +105,7 @@ double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned num_nodes,
             double dist_aux = dist[min_index] + haversine(nodes[min_index], nodes[adj]);
             //printf("%lf\n", dist_aux);
             if(dist[adj] > dist_aux){
-                char Is_adj_In_Pq = dist[adj] < 0;
+                Is_adj_In_Pq = (dist[adj] < max_double);
                 dist[adj] = dist_aux;
                 parent[adj] = min_index;
                 if(Is_adj_In_Pq)

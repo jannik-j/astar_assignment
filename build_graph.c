@@ -4,26 +4,27 @@ int main(int argc, char *argv[]){
 
     if (argc != 2) ExitError("Please specify the path to the .csv-file to read as an argument", 10);
 
+    FILE *fp;
     size_t buffer_size = 0;
     size_t num_chars;
     char *buffer, *field = NULL;
     node *nodes;
-    unsigned i, num_nodes;
+    unsigned i;
+    unsigned long num_nodes;
     int j;
 
     /* Open the file */
-    FILE *fp = fopen(argv[1], "r");
     printf("Opening file %s\n\n", argv[1]);
+    fp = fopen(argv[1], "r");
     if (!fp) ExitError("Unable to open file", 11);
-
     /* Count number of nodes and allocate memory for the nodes vector */
     for (i=0; i<3; i++)
         getline(&buffer, &buffer_size, fp); // Discard the first three lines
 
-    num_nodes = 0;
+    num_nodes = 0U;
     while (!feof(fp)){
         if (num_nodes%1000000 == 0)
-            printf("Reading line %d...\n", num_nodes);
+            printf("Reading line %lu...\n", num_nodes);
         num_chars = getline(&buffer, &buffer_size, fp);
         // printf("%s", buffer);
         if (strncmp(buffer, "node", strlen("node")))
@@ -32,7 +33,7 @@ int main(int argc, char *argv[]){
             num_nodes++;
     }
 
-    printf("Found %d lines.\n\n", num_nodes);
+    printf("Found %lu lines.\n\n", num_nodes);
 
     if ((nodes = (node*) malloc(num_nodes*sizeof(node))) == NULL)
         ExitError("Unable to allocate memory for the nodes", 12);
@@ -42,7 +43,7 @@ int main(int argc, char *argv[]){
     for (i=0; i<3; i++)
         getline(&buffer, &buffer_size, fp); // Discard the first three lines
 
-    i = 0;
+    i = 0U;
     while(!feof(fp) && (i<num_nodes)){
         if (i%1000000 == 0)
             printf("Extracting info of node %d...\n", i);
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]){
         readNodeLine(buffer, nodes, i);
         nodes[i].successors = NULL;
         nodes[i].name = NULL;
-        nodes[i].nsucc = 0;
+        nodes[i].nsucc = 0U;
         i++;
     }
     printf("Got info of all nodes. \n\n");
@@ -75,7 +76,7 @@ int main(int argc, char *argv[]){
 
         field = strsep(&buffer, "|");
         field = strsep(&buffer, "|");
-        prev_id = 0;
+        prev_id = 0UL;
         prev_pos = NOTFOUND;
         while (field != NULL){
             if (!strcmp(field, ""))

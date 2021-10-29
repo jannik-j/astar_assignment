@@ -17,9 +17,9 @@ typedef struct {
 void readNodeLine(char *buffer, node *nodes, int i);
 void printNodesList(node *nodes, int length);
 unsigned nodesearch(node *first, unsigned long id, unsigned length);
-int searchInSuccessors(node *first, unsigned prev_pos, unsigned next_id);
+int searchInSuccessors(node *first, unsigned prev_pos, unsigned long next_id);
 void linkNodes(node *nodes, unsigned prev_pos, unsigned next_pos);
-void computeValences(node *nodes, unsigned length, int max_valence);
+void computeValences(node *nodes, unsigned long length, int max_valence);
 void ExitError(const char *miss, int errcode);
-void writeBinary(node *nodes, unsigned num_nodes, const char *filename);
-node *readBinary(const char* filename, unsigned *num_nodes_arg);
+void writeBinary(node *nodes, unsigned long num_nodes, const char *filename);
+node *readBinary(const char* filename, unsigned long *num_nodes_arg);
