@@ -13,6 +13,8 @@ int main(int argc, char *argv[]){
     unsigned long num_nodes;
     int j;
 
+    clock_t start_build = clock();
+
     /* Open the file */
     printf("Opening file %s\n\n", argv[1]);
     fp = fopen(argv[1], "r");
@@ -21,7 +23,7 @@ int main(int argc, char *argv[]){
     for (i=0; i<3; i++)
         getline(&buffer, &buffer_size, fp); // Discard the first three lines
 
-    num_nodes = 0U;
+    num_nodes = 0UL;
     while (!feof(fp)){
         if (num_nodes%1000000 == 0)
             printf("Reading line %lu...\n", num_nodes);
@@ -121,5 +123,8 @@ int main(int argc, char *argv[]){
     //printNodesList(nodes, DEBUG_MAX_PRINT);
     computeValences(nodes, num_nodes, DEBUG_MAX_VALENCE);
     writeBinary(nodes, num_nodes, argv[1]);
+
+    clock_t end_build = clock();
+    printf("Done in %lf seconds.\n", ((double) end_build-start_build)/CLOCKS_PER_SEC);
     fclose(fp);
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define NOTFOUND 25000000
 #define DEBUG_MAX_VALENCE 9

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "utilities.h"
 
 typedef struct QueueElementstructure {
     unsigned index;
@@ -16,6 +17,4 @@ typedef struct{
 int IsEmpty( PriorityQueue Pq );
 unsigned extract_min(PriorityQueue *Pq);
 void add_with_priority(unsigned index, PriorityQueue *Pq, AStarData *PathData);
-void add_with_priority_old(unsigned index, PriorityQueue *Pq, double *dist);
 void requeue_with_priority(unsigned index, PriorityQueue *Pq, AStarData *PathData);
-void decrease_priority(unsigned index, PriorityQueue *Pq, double *dist);

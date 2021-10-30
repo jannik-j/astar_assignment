@@ -103,7 +103,7 @@ void computeValences(node *nodes, unsigned long length, int max_valence){
     for (i=0; i<=max_valence; i++){
         printf("Nodes with valence %d:\t%u\n", i, valences[i]);
     }
-    printf("Nodes with valence higher than the max of %d: %u\n", max_valence, too_large);
+    printf("Nodes with valence higher than the max of %d: %u\n\n", max_valence, too_large);
 }
 
 void ExitError(const char *miss, int errcode) {
@@ -146,7 +146,7 @@ void writeBinary(node *nodes, unsigned long num_nodes, const char *filename){
 node *readBinary(const char* filename, unsigned long *num_nodes_arg){
     FILE *fin;
     unsigned long ntotnsucc;
-    unsigned num_nodes;
+    unsigned long num_nodes;
     node *nodes;
     unsigned *allsuccessors;
     int i;
