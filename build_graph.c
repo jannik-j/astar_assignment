@@ -7,7 +7,7 @@ int main(int argc, char *argv[]){
     FILE *fp;
     size_t buffer_size = 0;
     size_t num_chars;
-    char *buffer, *field = NULL;
+    char *buffer = NULL, *field = NULL;
     node *nodes;
     unsigned i;
     unsigned long num_nodes;

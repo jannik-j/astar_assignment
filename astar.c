@@ -18,6 +18,21 @@ double haversine(node *node1, node *node2){
     return (R*c);
 }
 
+double equirec(node *node1, node *node2){
+    double lat1 = node1->lat;
+    double lon1 = node1->lon;
+    double lat2 = node2->lat;
+    double lon2 = node2->lon;
+
+    double phi1 = lat1*M_PI/180;
+    double phi2 = lat2*M_PI/180;
+    double delta_lambda = (lon2-lon1)*M_PI/180;
+
+    double x = delta_lambda * cos((phi1+phi2)/2);
+    double y = phi2-phi1;
+    return ((sqrt(x*x + y*y))*R);
+}
+
 void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData){
     PriorityQueue Open = NULL;
 
