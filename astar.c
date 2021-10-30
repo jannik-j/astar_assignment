@@ -3,10 +3,13 @@
 #include <math.h>
 #include <limits.h>
 #include <float.h>
+#include <time.h>
 
 double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned long num_nodes, unsigned *parent);
-double haversine(node node1, node node2);
+void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData);
+double haversine(node *node1, node *node2);
 const double R = 6371e3;
+
 
 int main(int argc, char *argv[]){
     if (argc != 2) ExitError("Please specify the path to the binary file to read as an argument", 10);
@@ -22,10 +25,26 @@ int main(int argc, char *argv[]){
     unsigned start_index = nodesearch(nodes, start, num_nodes);
     unsigned end_index = nodesearch(nodes, end, num_nodes);
 
+/*
     unsigned *parent = (unsigned *) malloc(num_nodes*sizeof(unsigned));
     memset(parent, UINT_MAX, num_nodes*sizeof(unsigned));
     double distance = dijkstra(nodes, start_index, end_index, num_nodes, parent);
+*/
+    AStarData *PathData = (AStarData *) malloc(num_nodes*sizeof(AStarData));
+    unsigned i;
+    for (i=0; i<num_nodes; i++){
+        PathData[i].f = DBL_MAX;
+        PathData[i].g = DBL_MAX;
+        PathData[i].isOpen = 0;
+    }
 
+    clock_t start_astar = clock();
+    astar(nodes, start_index, end_index, PathData);
+    clock_t end_astar = clock();
+
+    printf("Path found with distance %lf in %lf seconds\n", PathData[end_index].g, ((double) end_astar-start_astar)/CLOCKS_PER_SEC);
+
+/*
     printf("Found way from id %lu to id %lu with length %lf\n", start, end, distance);
     unsigned index;
     int path_count = 0;
@@ -54,15 +73,16 @@ int main(int argc, char *argv[]){
         //printf("ID: %lu \t Lat: %lf \t Lon: %lf\n", current.id, current.lat, current.lon);
         fprintf(fout, "%lf,%lf\n", current.lon, current.lat);
     }
+    */
 
     return(0);
 }
 
-double haversine(node node1, node node2){
-    double lat1 = node1.lat;
-    double lon1 = node1.lon;
-    double lat2 = node2.lat;
-    double lon2 = node2.lon;
+double haversine(node *node1, node *node2){
+    double lat1 = node1->lat;
+    double lon1 = node1->lon;
+    double lat2 = node2->lat;
+    double lon2 = node2->lon;
 
     double phi1 = lat1*M_PI/180;
     double phi2 = lat2*M_PI/180;
@@ -75,6 +95,43 @@ double haversine(node node1, node node2){
     return (R*c);
 }
 
+void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData){
+    PriorityQueue Open = NULL;
+
+    PathData[source].g = 0.0;
+    PathData[source].parent = UINT_MAX;
+    PathData[source].f = haversine(nodes+source, nodes+goal);
+    add_with_priority(source, &Open, PathData);
+
+    while(!IsEmpty(Open)){
+        unsigned i;
+        unsigned min_index = extract_min(&Open);
+        if (min_index == goal)
+            return;
+        for(i=0; i<nodes[min_index].nsucc; i++){
+            unsigned adj = nodes[min_index].successors[i];
+            double g_adj = PathData[min_index].g + haversine(nodes+min_index, nodes+adj);
+            if (g_adj < PathData[adj].g){
+                PathData[adj].parent = min_index;
+                double h_adj;
+                if (PathData[min_index].g < DBL_MAX)
+                    h_adj = PathData[adj].f - PathData[adj].g;
+                else
+                    h_adj = haversine(nodes+adj, nodes+goal);
+                PathData[adj].f = g_adj + h_adj;
+                PathData[adj].g = g_adj;
+                if (!PathData[adj].isOpen)
+                    add_with_priority(adj, &Open, PathData);
+                else
+                    requeue_with_priority(adj, &Open, PathData);
+            }
+        }
+        PathData[min_index].isOpen = 0;        
+    }   
+
+}
+
+/*
 double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned long num_nodes, unsigned *parent){ 
     PriorityQueue Pq = NULL;
     char *expanded = (char *) malloc(num_nodes*sizeof(char));
@@ -86,7 +143,7 @@ double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned long num_n
         dist[i] = DBL_MAX;
     
     dist[source] = 0.0;
-    add_with_priority(source, &Pq, dist);
+    add_with_priority_old(source, &Pq, dist);
 
     while(!IsEmpty(Pq)){
         register unsigned i;
@@ -110,9 +167,10 @@ double dijkstra(node *nodes, unsigned source, unsigned goal, unsigned long num_n
                 if(Is_adj_In_Pq)
                     decrease_priority(adj, &Pq, dist);
                 else
-                    add_with_priority(adj, &Pq, dist);
+                    add_with_priority_old(adj, &Pq, dist);
             }
         }
     }
     return -1.0;
 }
+*/
