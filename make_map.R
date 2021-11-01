@@ -1,0 +1,5 @@
+library(leaflet)
+library(htmlwidgets)
+df = read.csv("results/spain_240949599_195977239.csv")
+m = leaflet(data=df) %>% addTiles() %>% addPolylines(lat = ~lat, lng = ~lon)
+saveWidget(m, file="results/spain_240949599_195977239.html")

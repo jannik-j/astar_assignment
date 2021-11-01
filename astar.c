@@ -52,7 +52,7 @@ void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData){
             if (g_adj < PathData[adj].g){
                 PathData[adj].parent = min_index;
                 double h_adj;
-                if (PathData[min_index].g < DBL_MAX)
+                if (PathData[adj].g < DBL_MAX)
                     h_adj = PathData[adj].f - PathData[adj].g;
                 else
                     h_adj = haversine(nodes+adj, nodes+goal);

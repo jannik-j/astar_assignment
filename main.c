@@ -18,7 +18,8 @@ int main(int argc, char *argv[]){
     char filename[257];
     char basename[50];
     sprintf(basename, "_%lu_%lu.csv", start, end);
-    strcpy(filename, argv[1]);
+    strcpy(filename, "results");
+    strcat(filename, strrchr(argv[1], '/'));
     strcpy(strrchr(filename, '.'), basename);
 
     //printNodesList(nodes, DEBUG_MAX_PRINT);
@@ -39,10 +40,7 @@ int main(int argc, char *argv[]){
     astar(nodes, start_index, end_index, PathData);
     clock_t end_astar = clock();
 
-    printf("Path found with distance %lf in %lf seconds\n", PathData[end_index].g, ((double) end_astar-start_astar)/CLOCKS_PER_SEC);
-
-    printf("Distance is %lf\n", PathData[end_index].g);
-
+    printf("Path found with distance %lfm in %.3lf seconds\n", PathData[end_index].g, ((double) end_astar-start_astar)/CLOCKS_PER_SEC);
     make_path(nodes, start_index, end_index, PathData, filename);
     printf("csv-file with the coordinates saved to %s\n", filename);
     
