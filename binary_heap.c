@@ -12,7 +12,9 @@ unsigned extract_min(PriorityQueue *Pq, AStarData *PathData){
         return index;
     }
     PriorityQueue prev = q;
-    //Find the element of the heap to be put on top
+
+    //Find the element of the heap to be put on top. Has to be the one such that the tree
+    //is still balanced if we remove it from the bottom.
     while (q->left!=NULL){
         prev = q;
         if (q->left_size == q->right_size){
@@ -24,6 +26,7 @@ unsigned extract_min(PriorityQueue *Pq, AStarData *PathData){
             q = q->left;
         }
     }
+
     //Remove the element and copy its index to the root of the tree
     (*Pq)->index = q->index;
     if (prev->left==q){
@@ -34,7 +37,8 @@ unsigned extract_min(PriorityQueue *Pq, AStarData *PathData){
         free(q);
         prev->right = NULL;
     }
-    //Swap the indices of the heap elements until the correct order is reached
+
+    //Swap the indices of the heap elements until the correct order is restored.
     q = (*Pq);
     unsigned temp;
     PriorityQueue min_element = q;
@@ -61,6 +65,8 @@ void add_with_priority(unsigned index, PriorityQueue *Open, AStarData *PathData)
     QueueElement *aux = (QueueElement *) malloc(sizeof(QueueElement));
     if(aux == NULL)
         ExitError("Allocation of a new Queue element failed", 61);
+
+    //Initilaize the data of the new element
     aux->index = index;
     aux->left = NULL;
     aux->left_size = 0;
@@ -76,7 +82,9 @@ void add_with_priority(unsigned index, PriorityQueue *Open, AStarData *PathData)
     }
     QueueElement *q = *Open;
     QueueElement *next = q;
-    //Find the parent where to insert the new element
+
+    //Find the parent where to insert the new element such that the tree is balanced
+    //after the insertion.
     while(next != NULL){
         q = next;
         if (q->left_size==q->right_size){
@@ -93,6 +101,8 @@ void add_with_priority(unsigned index, PriorityQueue *Open, AStarData *PathData)
     else
         q->right = aux;
     aux->parent = q;
+
+    //Call the restore function to swap the index of the new element to the correct place.
     restore(aux, PathData);
     return;
 }
@@ -107,6 +117,7 @@ void requeue_with_priority(unsigned index, PriorityQueue *Open, AStarData *PathD
 
 void restore(QueueElement *q, AStarData *PathData){
     unsigned temp;
+    //Swap the indices of child and parent until the correct order is reached.
     while((q!=NULL) && (q->parent!=NULL) && (PathData[q->index].f < PathData[q->parent->index].f)){
         temp = q->index;
         q->index = q->parent->index;
@@ -122,6 +133,9 @@ QueueElement* find_element(unsigned index, PriorityQueue Pq){
     if (Pq->left==NULL)
         return NULL;
     QueueElement *q = NULL;
+
+    //We only have to search in the left or right subtree if the index of the left or
+    //right child is still smaller then the index we are searching or.
     if (Pq->left->index >= index)
         q = find_element(index, Pq->left);
     if ((q == NULL) && (Pq->right != NULL) && (Pq->right->index >= index)){

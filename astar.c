@@ -1,6 +1,6 @@
 #include "astar.h"
 
-const double R = 6371e3;
+const double R = 6371e3; //Radius of the earth.
 double haversine(node *node1, node *node2){
     double lat1 = node1->lat;
     double lon1 = node1->lon;
@@ -72,6 +72,8 @@ void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData){
 void make_path(node *nodes, unsigned start_index, unsigned end_index, AStarData *PathData, const char *filename){
     unsigned index;
     int path_count = 0;
+
+    //Trace the path backwards and count how many nodes we need
     for (index=end_index; index != UINT_MAX; index = PathData[index].parent)
         path_count++;
 
@@ -79,6 +81,8 @@ void make_path(node *nodes, unsigned start_index, unsigned end_index, AStarData 
     if (path==NULL)
         ExitError("Allocation of path index vector failed", 71);
     int j = 0;
+    
+    //Save the indices of the nodes in the path into an array
     for (index=end_index; index != UINT_MAX; index = PathData[index].parent){
         path[j] = index;
         j++;
@@ -88,6 +92,7 @@ void make_path(node *nodes, unsigned start_index, unsigned end_index, AStarData 
     fprintf(fout, "lon,lat\n");
     node current;
 
+    //Write the latitudes and longitudes in a file.
     for (j=path_count-1; j>=0; j--){
         current = nodes[path[j]];
         fprintf(fout, "%lf,%lf\n", current.lon, current.lat);
@@ -96,10 +101,14 @@ void make_path(node *nodes, unsigned start_index, unsigned end_index, AStarData 
 }
 
 AStarData *astar_init(unsigned long num_nodes){
+    //Allocate memory for the AStarData vector
     AStarData *PathData = (AStarData *) malloc(num_nodes*sizeof(AStarData));
     if (PathData == NULL)
         ExitError("Initialization of the AStarData failed", 51);
     unsigned i;
+
+    //Initialize the f- and g-values for each node to DBL_MAX, which represents infinity,
+    //and set the isOpen-flag to zero.
     for (i=0; i<num_nodes; i++){
         PathData[i].f = DBL_MAX;
         PathData[i].g = DBL_MAX;

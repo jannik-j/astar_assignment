@@ -1,6 +1,5 @@
 #include "utilities.h"
 
-// Extract the info from the line in buffer and save it to the struct at position i in nodes.
 void readNodeLine(char *buffer, node *nodes, int i){
     char *field;
     int j;
@@ -22,7 +21,6 @@ void readNodeLine(char *buffer, node *nodes, int i){
     }  
 }
 
-// Print the info of the first length structs.
 void printNodesList(node *nodes, int length){
     int i, j;
     for (i=0; i<length; i++){
@@ -38,8 +36,6 @@ void printNodesList(node *nodes, int length){
     }
 }
 
-// Search the position of the node with id id in the array of nodes.
-// If it is not found, NOTFOUND is returned.
 unsigned nodesearch(node *nodes, unsigned long id, unsigned long length){
     unsigned first = 0;
     unsigned last = length - 1;
@@ -59,8 +55,6 @@ unsigned nodesearch(node *nodes, unsigned long id, unsigned long length){
     return(NOTFOUND);
 }
 
-// Search, if the node with next_id is already in the succesors of the node at prev_pos in nodes.
-// If yes, 1 is returned, otherwise 0.
 int searchInSuccessors(node *nodes, unsigned prev_pos, unsigned long next_id){
     int k;
     unsigned *succs;
@@ -73,8 +67,6 @@ int searchInSuccessors(node *nodes, unsigned prev_pos, unsigned long next_id){
     return(0);
 }
 
-// Adds the position next_pos to the list of successors of the node at prev_pos and increments
-// nodes[prev_pos].nsucc by 1.
 void linkNodes(node *nodes, unsigned prev_pos, unsigned next_pos){
     nodes[prev_pos].successors = (unsigned *) realloc(nodes[prev_pos].successors, (nodes[prev_pos].nsucc+1)*sizeof(unsigned));
     if (nodes[prev_pos].successors == NULL)
@@ -83,7 +75,6 @@ void linkNodes(node *nodes, unsigned prev_pos, unsigned next_pos){
     nodes[prev_pos].nsucc++;
 }
 
-// Computes and displays the distribution of valences of the nodes.
 void computeValences(node *nodes, unsigned long length, int max_valence){
     int i;
     unsigned *valences;

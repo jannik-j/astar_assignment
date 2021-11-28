@@ -22,7 +22,6 @@ int main(int argc, char *argv[]){
     strcat(filename, strrchr(argv[1], '/'));
     strcpy(strrchr(filename, '.'), basename);
 
-    //printNodesList(nodes, DEBUG_MAX_PRINT);
     computeValences(nodes, num_nodes, DEBUG_MAX_VALENCE);
 
     unsigned start_index = nodesearch(nodes, start, num_nodes);

@@ -1,3 +1,8 @@
+/*
+Main function for reading the .csv-file and building the graph out of it.
+Works for the spain.csv and cataluna.csv files.
+*/
+
 #include "utilities.h"
 
 int main(int argc, char *argv[]){
@@ -19,6 +24,7 @@ int main(int argc, char *argv[]){
     printf("Opening file %s\n\n", argv[1]);
     fp = fopen(argv[1], "r");
     if (!fp) ExitError("Unable to open file", 11);
+
     /* Count number of nodes and allocate memory for the nodes vector */
     for (i=0; i<3; i++)
         getline(&buffer, &buffer_size, fp); // Discard the first three lines
@@ -28,7 +34,6 @@ int main(int argc, char *argv[]){
         if (num_nodes%1000000 == 0)
             printf("Reading line %lu...\n", num_nodes);
         num_chars = getline(&buffer, &buffer_size, fp);
-        // printf("%s", buffer);
         if (strncmp(buffer, "node", strlen("node")))
             break;
         else
@@ -68,59 +73,42 @@ int main(int argc, char *argv[]){
     while(!strncmp(buffer, "way", 3)){
         if (count%100000 == 0)
             printf("Reading way %d\n", count);
-        for (j=1; j<=8; j++){
+        for (j=1; j<=8; j++)
             field = strsep(&buffer, "|");
-        }
-        if (!strcmp(field, "oneway")){
+        if (!strcmp(field, "oneway"))
             oneway = 1;
-            //printf("Oneway flag found\n");
-        }
 
         field = strsep(&buffer, "|");
         field = strsep(&buffer, "|");
         prev_id = 0UL;
         prev_pos = NOTFOUND;
+        //Traverse the fields and link the nodes if they exist.
         while (field != NULL){
             if (!strcmp(field, ""))
                 ExitError("Empty field while reading way", 13);
             sscanf(field, "%lu", &next_id);       
             field = strsep(&buffer, "|");
-            //printf("Searching for node with id %lu\n", next_id);
             next_pos = nodesearch(nodes, next_id, num_nodes);
-            if (next_pos == NOTFOUND){
-                //printf("Node %lu not found\n", next_id);
+            if (next_pos == NOTFOUND)
                 continue;
-            }
-            //printf("Found at position %u\n", next_pos);
             if (prev_pos != NOTFOUND){
-                // Search, if the node at next_pos is already a successor of the node at prev_pos
                 found = searchInSuccessors(nodes, prev_pos, next_id);
-                if (!found){
-                    //printf("Connecting nodes at positions %u and %u\n", prev_pos, next_pos);                    
+                if (!found)          
                     linkNodes(nodes, prev_pos, next_pos);
-                }
                 // Do it the other way around if not oneway
                 if (!oneway){
-                    //printf("Flag oneway was not found \n");
                     found = searchInSuccessors(nodes, next_pos, prev_id);
-                    if (!found){
-                        //printf("Connecting nodes at positions %u and %u\n", next_pos, prev_pos);                
+                    if (!found)             
                         linkNodes(nodes, next_pos, prev_pos);
-                    }
                 }
             }
             prev_pos = next_pos;
             prev_id = next_id;
         }
-        // DEBUG Skip to the end of the line for the next getline to work correctly
-        // while(field != NULL)
-        //     field = strsep(&buffer, "|");
         oneway = 0;
         num_chars = getline(&buffer, &buffer_size, fp);
         count++;
     }
-    //printf("\n=== Information of the first %d nodes in the list ===\n", DEBUG_MAX_PRINT);
-    //printNodesList(nodes, DEBUG_MAX_PRINT);
     computeValences(nodes, num_nodes, DEBUG_MAX_VALENCE);
     writeBinary(nodes, num_nodes, argv[1]);
 
