@@ -43,7 +43,7 @@ void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData){
 
     while(!IsEmpty(Open)){
         unsigned i;
-        unsigned min_index = extract_min(&Open);
+        unsigned min_index = extract_min(&Open, PathData);
         if (min_index == goal)
             return;
         for(i=0; i<nodes[min_index].nsucc; i++){

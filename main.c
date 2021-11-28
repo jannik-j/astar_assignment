@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
         ExitError("No start node with that ID", 91);
     unsigned end_index = nodesearch(nodes, end, num_nodes);
     if (end_index == NOTFOUND)
-        ExitError("No start node with that ID", 92);
+        ExitError("No end node with that ID", 92);
 
     printf("Initilazing AStar...\n");
     AStarData *PathData = astar_init(num_nodes);

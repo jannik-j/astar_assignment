@@ -4,7 +4,7 @@ int IsEmpty(PriorityQueue Pq){
     return ( Pq == NULL );
 }
 
-unsigned extract_min(PriorityQueue *Pq){
+unsigned extract_min(PriorityQueue *Pq, AStarData *PathData){
     PriorityQueue first = *Pq;
     unsigned index = first->index;
     //printf("Removed index %u from the queue\n", index);
