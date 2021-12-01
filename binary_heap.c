@@ -110,9 +110,8 @@ void add_with_priority(unsigned index, PriorityQueue *Open, AStarData *PathData)
 void requeue_with_priority(unsigned index, PriorityQueue *Open, AStarData *PathData){
     if((*Open)->index == index)
         return;
-    //QueueElement *q = find_element(index, *Open);
-    //restore(q, PathData);
     add_with_priority(index, Open, PathData);
+    return;
 }
 
 void restore(QueueElement *q, AStarData *PathData){
@@ -125,22 +124,5 @@ void restore(QueueElement *q, AStarData *PathData){
         q = q->parent;
     }
     return;
-}
-
-QueueElement* find_element(unsigned index, PriorityQueue Pq){
-    if (Pq->index==index)
-        return Pq;
-    if (Pq->left==NULL)
-        return NULL;
-    QueueElement *q = NULL;
-
-    //We only have to search in the left or right subtree if the index of the left or
-    //right child is still smaller then the index we are searching or.
-    if (Pq->left->index >= index)
-        q = find_element(index, Pq->left);
-    if ((q == NULL) && (Pq->right != NULL) && (Pq->right->index >= index)){
-        q = find_element(index, Pq->right);
-    }
-    return q;
 }
 

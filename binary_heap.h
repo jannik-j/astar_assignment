@@ -41,6 +41,3 @@ void requeue_with_priority(unsigned index, PriorityQueue *Pq, AStarData *PathDat
 //Restores the tree so that after insertion or a change in priority, the element at q is
 //in the correct position.
 void restore(QueueElement *q, AStarData *PathData);
-
-//Searches the tree recursively for an element with the specified index and returns a pointer to it.
-QueueElement* find_element(unsigned index, PriorityQueue Pq);

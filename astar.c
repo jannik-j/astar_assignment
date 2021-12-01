@@ -46,6 +46,8 @@ void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData){
         unsigned min_index = extract_min(&Open, PathData);
         if (min_index == goal)
             return;
+        if (PathData[min_index].isOpen == 0)
+            continue;
         for(i=0; i<nodes[min_index].nsucc; i++){
             unsigned adj = nodes[min_index].successors[i];
             double g_adj = PathData[min_index].g + haversine(nodes+min_index, nodes+adj);
@@ -65,8 +67,7 @@ void astar(node *nodes, unsigned source, unsigned goal, AStarData *PathData){
             }
         }
         PathData[min_index].isOpen = 0;        
-    }   
-
+    }
 }
 
 void make_path(node *nodes, unsigned start_index, unsigned end_index, AStarData *PathData, const char *filename){

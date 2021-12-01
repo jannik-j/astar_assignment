@@ -57,7 +57,6 @@ int main(int argc, char *argv[]){
         num_chars = getline(&buffer, &buffer_size, fp);
         readNodeLine(buffer, nodes, i);
         nodes[i].successors = NULL;
-        nodes[i].name = NULL;
         nodes[i].nsucc = 0U;
         i++;
     }

@@ -1,4 +1,4 @@
-#include "priority_queue.h"
+#include "linked_list.h"
 
 int IsEmpty(PriorityQueue Pq){
     return ( Pq == NULL );
